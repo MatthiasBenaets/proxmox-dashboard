@@ -1,8 +1,8 @@
 import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import cryptojs from 'crypto-js';
-import { getAuthCookies, clearAuthCookies } from './lib/cookies';
-import { SECRET_KEY } from '$env/static/private';
+import { getAuthCookies, clearAuthCookies } from '$lib/cookies';
+import config from '$lib/server/config';
 
 export const handle: Handle = async ({ event, resolve }) => {
   const { url, cookies } = event;
@@ -22,7 +22,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         },
         body: JSON.stringify({
           username: user,
-          password: cryptojs.AES.decrypt(ticket, SECRET_KEY).toString(cryptojs.enc.Utf8),
+          password: cryptojs.AES.decrypt(ticket, config.SECRET_KEY).toString(cryptojs.enc.Utf8),
         }),
       });
       isLoggedIn = auth.ok;

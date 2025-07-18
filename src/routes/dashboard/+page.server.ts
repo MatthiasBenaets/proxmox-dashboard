@@ -1,9 +1,9 @@
 import cryptojs from 'crypto-js';
-import { SECRET_KEY, NODES } from '$env/static/private';
+import config from '$lib/server/config';
 import type { PageServerLoad } from './$types';
 import type { VM } from '$lib/types';
 
-const nodes = NODES.split(',');
+const nodes = config.NODES.split(',');
 
 export const load: PageServerLoad = async ({ locals }) => {
   let vms: VM[] = [];
@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `PVEAuthCookie=${cryptojs.AES.decrypt(locals.ticket, SECRET_KEY).toString(cryptojs.enc.Utf8)}`,
+      Authorization: `PVEAuthCookie=${cryptojs.AES.decrypt(locals.ticket, config.SECRET_KEY).toString(cryptojs.enc.Utf8)}`,
     };
 
     for (const node of nodes) {
