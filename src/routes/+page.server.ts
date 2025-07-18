@@ -1,5 +1,7 @@
+import cryptojs from 'crypto-js';
 import { setAuthCookies, clearAuthCookies } from '../lib/cookies';
 import type { Actions, PageServerLoad } from './$types';
+import { SECRET_KEY } from '$env/static/private';
 
 export const load: PageServerLoad = async ({ locals }) => {
   return {
@@ -55,7 +57,7 @@ export const actions = {
         domain: domainName,
         user: userName,
         token: apiToken,
-        ticket: response.data.ticket,
+        ticket: cryptojs.AES.encrypt(response.data.ticket, SECRET_KEY).toString(),
         csrf: response.data.CSRFPreventionToken,
       });
 
