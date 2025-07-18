@@ -1,5 +1,5 @@
 import cryptojs from 'crypto-js';
-import { setAuthCookies, clearAuthCookies } from '../lib/cookies';
+import { setAuthCookies, clearAuthCookies } from '$lib/cookies';
 import type { Actions, PageServerLoad } from './$types';
 import { SECRET_KEY } from '$env/static/private';
 

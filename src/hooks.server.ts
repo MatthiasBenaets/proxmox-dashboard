@@ -10,7 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   const { ticket, user, token, domain } = getAuthCookies(cookies);
 
   let isLoggedIn = false;
-  const publicRoutes = ['/'];
+  const publicRoutes = ['/login'];
   const isPublicRoute = publicRoutes.includes(url.pathname);
 
   try {
@@ -29,13 +29,13 @@ export const handle: Handle = async ({ event, resolve }) => {
     }
   } catch {
     clearAuthCookies(cookies);
-    return redirect(303, '/');
+    return redirect(303, '/login');
   }
 
   if (!isLoggedIn) {
     clearAuthCookies(cookies);
     if (!isPublicRoute) {
-      return redirect(303, '/');
+      return redirect(303, '/login');
     }
     return resolve(event);
   } else {
@@ -45,6 +45,11 @@ export const handle: Handle = async ({ event, resolve }) => {
       domain,
       ticket,
     };
+
+    if (url.pathname === '/' || url.pathname === '/login') {
+      return redirect(303, '/dashboard');
+    }
+
     return resolve(event);
   }
 };
