@@ -13,7 +13,7 @@ Logged in as {locals?.user}
   {#each vms as vm, index (vm.vmid)}
     <p>
       {index + 1}:
-      {vm.type || 'qemu'} - {vm.vmid} - {vm.name} - {vm.status}
+      {vm.node} - {vm.type || 'qemu'} - {vm.vmid} - {vm.name} - {vm.status}
       {vm.template == 1 ? '- template' : ''}
     </p>
   {/each}

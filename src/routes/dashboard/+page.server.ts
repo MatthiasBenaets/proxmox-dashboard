@@ -27,11 +27,17 @@ export const load: PageServerLoad = async ({ locals }) => {
           headers: headers,
         });
         const lxcs = await containers.json();
+        for (const lxc of lxcs.data) {
+          lxc.node = node;
+        }
         const machines = await fetch(`https://${locals.domain}/api2/json/nodes/${node}/qemu`, {
           method: 'GET',
           headers: headers,
         });
         const qemus = await machines.json();
+        for (const qemu of qemus.data) {
+          qemu.node = node;
+        }
 
         vms = [...vms, ...lxcs.data, ...qemus.data];
       } catch {

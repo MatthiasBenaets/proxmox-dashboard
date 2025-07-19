@@ -17,6 +17,7 @@ export interface VM {
   name: string;
   netin: number;
   netout: number;
+  node: string;
   pid: number;
   qmpstatus?: string;
   'running-machine'?: string;
