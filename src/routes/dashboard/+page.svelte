@@ -11,10 +11,14 @@ Logged in as {locals?.user}
 
 {#if vms && vms.length != 0}
   {#each vms as vm, index (vm.vmid)}
-    <p>
-      {index + 1}:
-      {vm.node} - {vm.type || 'qemu'} - {vm.vmid} - {vm.name} - {vm.status}
-      {vm.template == 1 ? '- template' : ''}
-    </p>
+    <div class="flex flex-row">
+      <p class="w-1/2">
+        {index + 1}:
+        {vm.node} - {vm.type || 'qemu'} - {vm.vmid} - {vm.name} - {vm.status}
+        {vm.template == 1 ? '- template' : ''}
+      </p>
+      <!-- <a href="/dashboard/{vm.node}/{vm.type}/{vm.vmid}"> Open </a> -->
+      <a href="/dashboard/{vm.vmid}?node={vm.node}&type={vm.type}" class="w-1/2"> Open </a>
+    </div>
   {/each}
 {/if}

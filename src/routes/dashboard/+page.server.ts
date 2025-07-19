@@ -36,6 +36,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         });
         const qemus = await machines.json();
         for (const qemu of qemus.data) {
+          qemu.type = 'qemu';
           qemu.node = node;
         }
 
