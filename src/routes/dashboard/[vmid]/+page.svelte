@@ -1,6 +1,5 @@
 <script lang="ts">
   let { data } = $props();
-  console.log(data);
   let { vm, param, error } = data;
 </script>
 
