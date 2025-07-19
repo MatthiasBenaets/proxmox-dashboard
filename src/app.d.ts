@@ -8,6 +8,7 @@ declare global {
       user: string | undefined;
       token: string | undefined;
       ticket: string | undefined;
+      csrf: string | undefined;
     }
     // interface PageData {}
     // interface PageState {}

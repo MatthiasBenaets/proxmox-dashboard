@@ -7,7 +7,7 @@ import config from '$lib/server/config';
 export const handle: Handle = async ({ event, resolve }) => {
   const { url, cookies } = event;
 
-  const { ticket, user, token, domain } = getAuthCookies(cookies);
+  const { ticket, user, token, domain, csrf } = getAuthCookies(cookies);
 
   let isLoggedIn = false;
   const publicRoutes = ['/login'];
@@ -44,6 +44,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       token,
       domain,
       ticket,
+      csrf,
     };
 
     if (url.pathname === '/' || url.pathname === '/login') {
