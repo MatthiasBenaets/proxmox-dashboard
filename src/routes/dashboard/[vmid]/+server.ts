@@ -1,16 +1,16 @@
 import cryptojs from 'crypto-js';
 import config from '$lib/server/config';
-import type { PageServerLoad } from './$types';
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import type { VM } from '$lib/types';
 
-export const load: PageServerLoad = async ({ locals, params, url }) => {
+export const POST: RequestHandler = async ({ locals, request }) => {
+  const { vmid, node, type } = await request.json();
   let vm: VM | null = null;
-  const { vmid } = params;
-  const param = { vmid, node: url.searchParams.get('node'), type: url.searchParams.get('type') };
 
   try {
     if (!locals.ticket || !locals.user || !locals.domain) {
-      return {};
+      return json({ error: 'Not logged in.' }, { status: 401 });
     }
 
     const headers = {
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     };
 
     const status = await fetch(
-      `https://${locals.domain}/api2/json/nodes/${param.node}/${param.type}/${vmid}/status/current`,
+      `https://${locals.domain}/api2/json/nodes/${node}/${type}/${vmid}/status/current`,
       {
         method: 'GET',
         headers: headers,
@@ -27,22 +27,19 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
     );
 
     if (!status.ok) {
-      return {
-        error: 'Failed to fetch data from machine.',
-      };
+      return json({ error: 'Failed to fetch data from machine.' }, { status: status.status });
     }
 
     const response = await status.json();
     vm = response.data;
   } catch (error) {
-    return {
-      error: 'Failed to fetch data from Proxmox: ' + error,
-    };
+    return json(
+      {
+        error: 'Failed to fetch data from Proxmox: ' + error,
+      },
+      { status: 500 }
+    );
   }
 
-  return {
-    locals,
-    vm,
-    param,
-  };
+  return json({ vm }, { status: 200 });
 };
