@@ -30,23 +30,20 @@
     async function loadData() {
       ({ link, error } = await fetchData());
       ready = true;
-      console.log(link);
     }
     loadData();
   });
 </script>
 
 {#if ready}
-  <div class="flex h-screen w-screen flex-col overflow-hidden">
-    {#if !error}
-      <iframe
-        src={link}
-        title="Remote Virtual Machine"
-        class="h-full w-full border-none"
-        allowfullscreen
-      ></iframe>
-    {:else}
-      <p>{error}</p>
-    {/if}
-  </div>
+  {#if !error}
+    <iframe
+      src={link}
+      title="Remote Virtual Machine"
+      class="h-full w-full border-none"
+      allowfullscreen
+    ></iframe>
+  {:else}
+    <p>{error}</p>
+  {/if}
 {/if}
