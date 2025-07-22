@@ -28,7 +28,7 @@
 
 <div class="h-full w-full">
   <div class="grid h-full grid-cols-4 xl:grid-cols-5">
-    <div class="m-2 mr-1 overflow-scroll border border-neutral-600 bg-neutral-800 p-2 px-3.5">
+    <div class="m-2 mr-1 overflow-scroll border border-neutral-600 bg-neutral-800">
       <Datacenter {vms} />
     </div>
     <div
