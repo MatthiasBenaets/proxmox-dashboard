@@ -16,7 +16,6 @@
   function isNodeExpanded(node: string): boolean {
     return nodeState[node] === undefined ? true : nodeState[node];
   }
-  console.log(vms);
 </script>
 
 <div class="flex flex-col">

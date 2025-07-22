@@ -34,8 +34,8 @@
     <div
       class="col-span-3 m-2 ml-1 overflow-scroll border border-neutral-600 bg-neutral-800 xl:col-span-4"
     >
-      {#if !page.url.search}
-        <Overview {vms} />
+      {#if !page.url.search || (page.url.searchParams.size == 1 && page.url.searchParams.get('node'))}
+        <Overview {vms} node={params.node || null} />
       {:else if page.url.searchParams.get('vmid') && page.url.searchParams.get('node') && page.url.searchParams.get('type')}
         {#if page.url.searchParams.get('remote') == '1'}
           <Remote {params} />
