@@ -3,6 +3,11 @@ enum Status {
   Running = 'running',
 }
 
+enum Type {
+  Qemu = 'qemu',
+  Lxc = 'lxc',
+}
+
 export interface VM {
   cpu: number;
   cpus: number;
@@ -26,7 +31,13 @@ export interface VM {
   status: Status;
   tags: string;
   template: number;
-  type?: string;
+  type: Type;
   uptime: number;
   vmid: number;
+}
+
+export interface Params {
+  vmid: string | number | null;
+  node: string | null;
+  type: string | null;
 }
