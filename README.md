@@ -1,3 +1,14 @@
+IMPORTANT NOTES
+
+nginx config requirement for vnc to work:
+proxy_set_header Host $host;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+client_max_body_size 0;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "Upgrade";
+
 # sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
