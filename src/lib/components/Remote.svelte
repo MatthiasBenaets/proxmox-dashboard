@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { showError } from '$lib/error.svelte';
+
   let { params } = $props();
   let link = $state('');
   let error = $state('');
@@ -14,14 +16,16 @@
         body: JSON.stringify(params),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        return result;
+      if (!response.ok) {
+        return {
+          error: (await response.json()).error,
+        };
       }
+      const result = await response.json();
+      return result;
     } else {
       return {
         link: '',
-        error: 'No vmid provided',
       };
     }
   }
@@ -29,6 +33,9 @@
   $effect(() => {
     async function loadData() {
       ({ link, error } = await fetchData());
+      if (error) {
+        showError(error);
+      }
       ready = true;
     }
     loadData();

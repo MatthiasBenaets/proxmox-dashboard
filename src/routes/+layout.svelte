@@ -1,6 +1,8 @@
 <script lang="ts">
   import '../app.css';
   import Header from '$lib/components/Header.svelte';
+  import Error from '$lib/components/Error.svelte';
+  import { errorState } from '$lib/error.svelte';
 
   let { children } = $props();
 </script>
@@ -13,4 +15,8 @@
   <main class="flex flex-grow items-center justify-center">
     {@render children()}
   </main>
+
+  {#if errorState.errors}
+    <Error />
+  {/if}
 </div>

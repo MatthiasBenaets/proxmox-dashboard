@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     if (!vncproxy.ok) {
       return json(
         {
-          error: 'Failed to connect to machine.',
+          error: 'Failed to connect to machine. ' + vncproxy.statusText,
         },
         { status: vncproxy.status }
       );

@@ -4,6 +4,7 @@
   import Detail from '$lib/components/Detail.svelte';
   import Remote from '$lib/components/Remote.svelte';
   import Datacenter from '$lib/components/Datacenter.svelte';
+  import { showError } from '$lib/error.svelte';
   import type { Params } from '$lib/types';
 
   let { data } = $props();
@@ -23,6 +24,14 @@
       node: page.url.searchParams.get('node'),
       type: page.url.searchParams.get('type'),
     };
+  });
+
+  let errorVisible = $state(false);
+  $effect(() => {
+    if (error && !errorVisible) {
+      showError(error);
+      errorVisible = true;
+    }
   });
 </script>
 
@@ -45,5 +54,4 @@
       {/if}
     </div>
   </div>
-  <p>{error}</p>
 </div>

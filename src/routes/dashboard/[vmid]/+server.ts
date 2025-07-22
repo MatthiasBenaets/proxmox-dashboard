@@ -8,11 +8,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
   const { vmid, node, type } = await request.json();
   let vm: VM | null = null;
 
-  try {
-    if (!locals.ticket || !locals.user || !locals.domain) {
-      return json({ error: 'Not logged in.' }, { status: 401 });
-    }
+  if (!locals.ticket || !locals.user || !locals.domain) {
+    return json({ error: 'Not logged in.' }, { status: 401 });
+  }
 
+  try {
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `PVEAuthCookie=${cryptojs.AES.decrypt(locals.ticket, config.SECRET_KEY).toString(cryptojs.enc.Utf8)}`,
@@ -27,7 +27,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     );
 
     if (!status.ok) {
-      return json({ error: 'Failed to fetch data from machine.' }, { status: status.status });
+      return json(
+        { error: 'Failed to fetch data from Proxmox. ' + status.statusText },
+        { status: status.status }
+      );
     }
 
     const response = await status.json();

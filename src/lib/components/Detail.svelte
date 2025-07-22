@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { VM } from '$lib/types';
+  import { showError } from '$lib/error.svelte';
 
   let { params } = $props();
   let vm: VM | null = $state(null);
@@ -16,14 +17,16 @@
         body: JSON.stringify(params),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        return result;
+      if (!response.ok) {
+        return {
+          error: (await response.json()).error,
+        };
       }
+      const result = await response.json();
+      return result;
     } else {
       return {
         vm: null,
-        error: 'No vmid provided',
       };
     }
   }
@@ -31,6 +34,9 @@
   $effect(() => {
     async function loadData() {
       ({ vm, error } = await fetchData());
+      if (error) {
+        showError(error);
+      }
       ready = true;
     }
     loadData();
