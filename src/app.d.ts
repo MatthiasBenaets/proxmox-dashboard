@@ -4,11 +4,11 @@ declare global {
   namespace App {
     // interface Error {}
     interface Locals {
-      domain: string | undefined;
-      user: string | undefined;
-      token: string | undefined;
-      ticket: string | undefined;
-      csrf: string | undefined;
+      PVEDomain: string | undefined;
+      PVEUser: string | undefined;
+      PVEAPIToken: string | undefined;
+      PVEAuthCookie: string | undefined;
+      PVECSRFPreventionToken: string | undefined;
     }
     // interface PageData {}
     // interface PageState {}

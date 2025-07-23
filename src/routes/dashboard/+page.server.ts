@@ -1,4 +1,3 @@
-import cryptojs from 'crypto-js';
 import config from '$lib/server/config';
 import type { PageServerLoad } from './$types';
 import type { VM } from '$lib/types';
@@ -11,18 +10,18 @@ export const load: PageServerLoad = async ({ locals }) => {
   let error: string = '';
 
   try {
-    if (!locals.ticket || !locals.user || !locals.domain) {
+    if (!locals.PVEAuthCookie || !locals.PVEUser || !locals.PVEDomain) {
       return {};
     }
 
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `PVEAuthCookie=${cryptojs.AES.decrypt(locals.ticket, config.SECRET_KEY).toString(cryptojs.enc.Utf8)}`,
+      Authorization: `PVEAuthCookie=${locals.PVEAuthCookie}`,
     };
 
     for (const node of nodes) {
       try {
-        const containers = await fetch(`https://${locals.domain}/api2/json/nodes/${node}/lxc`, {
+        const containers = await fetch(`https://${locals.PVEDomain}/api2/json/nodes/${node}/lxc`, {
           method: 'GET',
           headers: headers,
         });
@@ -30,7 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         for (const lxc of lxcs.data) {
           lxc.node = node;
         }
-        const machines = await fetch(`https://${locals.domain}/api2/json/nodes/${node}/qemu`, {
+        const machines = await fetch(`https://${locals.PVEDomain}/api2/json/nodes/${node}/qemu`, {
           method: 'GET',
           headers: headers,
         });

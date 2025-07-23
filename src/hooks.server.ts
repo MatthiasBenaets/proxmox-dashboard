@@ -1,50 +1,51 @@
 import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
-import cryptojs from 'crypto-js';
-import { getAuthCookies, clearAuthCookies } from '$lib/cookies';
-import config from '$lib/server/config';
+import { getCookie, clearCookies } from '$lib/cookies';
 
 export const handle: Handle = async ({ event, resolve }) => {
   const { url, cookies } = event;
 
-  const { ticket, user, token, domain, csrf } = getAuthCookies(cookies);
+  const { PVEAuthCookie, PVEUser, PVEAPIToken, PVEDomain, PVECSRFPreventionToken } = getCookie(
+    cookies,
+    ['PVEAuthCookie', 'PVEUser', 'PVEAPIToken', 'PVEDomain', 'PVECSRFPreventionToken']
+  );
 
   let isLoggedIn = false;
   const publicRoutes = ['/login'];
   const isPublicRoute = publicRoutes.includes(url.pathname);
 
   try {
-    if (ticket && user && token && domain) {
-      const auth = await fetch(`https://${domain}/api2/json/access/ticket`, {
+    if (PVEAuthCookie && PVEUser && PVEAPIToken && PVEDomain) {
+      const auth = await fetch(`https://${PVEDomain}/api2/json/access/ticket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: user,
-          password: cryptojs.AES.decrypt(ticket, config.SECRET_KEY).toString(cryptojs.enc.Utf8),
+          username: PVEUser,
+          password: PVEAuthCookie,
         }),
       });
       isLoggedIn = auth.ok;
     }
   } catch {
-    clearAuthCookies(cookies);
+    clearCookies(cookies);
     return redirect(303, '/login');
   }
 
   if (!isLoggedIn) {
-    clearAuthCookies(cookies);
+    clearCookies(cookies);
     if (!isPublicRoute) {
       return redirect(303, '/login');
     }
     return resolve(event);
   } else {
     event.locals = {
-      user,
-      token,
-      domain,
-      ticket,
-      csrf,
+      PVEUser,
+      PVEAPIToken,
+      PVEDomain,
+      PVEAuthCookie,
+      PVECSRFPreventionToken,
     };
 
     if (url.pathname === '/' || url.pathname === '/login') {

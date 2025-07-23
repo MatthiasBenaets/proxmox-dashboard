@@ -1,7 +1,8 @@
-import { clearAuthCookies } from '$lib/cookies';
+import { clearCookies } from '$lib/cookies';
 import { redirect } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
-export async function POST({ cookies }) {
-  clearAuthCookies(cookies);
+export const POST: RequestHandler = async ({ cookies }) => {
+  clearCookies(cookies);
   return redirect(303, '/login');
-}
+};

@@ -19,13 +19,6 @@
       </div>
     {/each}
     {#if errorState.errors.length > 1}
-      <!-- <div class="flex w-full justify-end">
-        <button
-          class="cursor-pointer border border-neutral-600 px-2 text-xs"
-          on:click={() => clearAllErrors()}>Clear All</button
-        >
-      </div> -->
-
       <button
         class="absolute top-2 right-2 cursor-pointer border border-neutral-600 bg-red-500 px-2"
         on:click={() => clearAllErrors()}

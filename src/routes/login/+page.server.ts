@@ -1,13 +1,11 @@
-import cryptojs from 'crypto-js';
-import { setAuthCookies, clearAuthCookies } from '$lib/cookies';
+import { setCookie, clearCookies } from '$lib/cookies';
 import type { Actions, PageServerLoad } from './$types';
-import config from '$lib/server/config';
 
 export const load: PageServerLoad = async ({ locals }) => {
   return {
-    domainName: locals.domain,
-    userName: locals.user,
-    apiToken: locals.token,
+    domainName: locals.PVEDomain,
+    userName: locals.PVEUser,
+    apiToken: locals.PVEAPIToken,
   };
 };
 
@@ -52,13 +50,16 @@ export const actions = {
       }
 
       const response = await ticket.json();
-
-      setAuthCookies(cookies, {
-        domain: domainName,
-        user: userName,
-        token: apiToken,
-        ticket: cryptojs.AES.encrypt(response.data.ticket, config.SECRET_KEY).toString(),
-        csrf: response.data.CSRFPreventionToken,
+      setCookie(cookies, 'PVEDomain', domainName);
+      setCookie(cookies, 'PVEUser', userName);
+      setCookie(cookies, 'PVEAPIToken', apiToken);
+      setCookie(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken);
+      setCookie(cookies, 'PVEAuthCookie', response.data.ticket, {
+        path: '/',
+        httpOnly: false,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 60 * 60 * 24 * 7,
       });
 
       return {
@@ -79,6 +80,6 @@ export const actions = {
   },
 
   logout: async ({ cookies }) => {
-    clearAuthCookies(cookies);
+    clearCookies(cookies);
   },
 } satisfies Actions;
