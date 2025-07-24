@@ -38,7 +38,6 @@ export function clearCookies(cookies: Cookies, host?: string) {
     cookies.delete(cookie.name, { path: '/' });
   }
   if (host) {
-    console.log(getBaseDomain(host));
     cookies.delete('PVEAuthCookie', {
       domain: '.' + getBaseDomain(host),
       path: '/',

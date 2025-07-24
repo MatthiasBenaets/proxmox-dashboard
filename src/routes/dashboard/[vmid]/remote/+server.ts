@@ -5,7 +5,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
   let link: string = '';
   const { vmid, node, type } = await request.json();
 
-  console.log(locals);
   if (
     !locals.PVEAuthCookie ||
     !locals.PVEUser ||

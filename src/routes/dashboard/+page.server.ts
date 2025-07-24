@@ -8,7 +8,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
   try {
     if (!locals.PVEAuthCookie || !locals.PVEUser || !locals.PVEDomain || !locals.PVENodes) {
-      return {};
+      return {
+        error: 'Unable to authenticate. Please log out and in again.',
+      };
     }
 
     const headers = {
