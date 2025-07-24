@@ -1,10 +1,20 @@
 <script lang="ts">
+  import Top from '$lib/components/body/parts/Top.svelte';
   import { Container, Monitor, File } from '@lucide/svelte';
   import { updateSearchParam } from '$lib/utils';
 
   let { vms, node } = $props();
 </script>
 
+<Top>
+  <p>
+    {#if node}
+      Node '{node}'
+    {:else}
+      Datacenter
+    {/if}
+  </p>
+</Top>
 <div class="flex flex-col">
   <div class="flex h-10 w-full flex-row items-center border-b-1 border-neutral-600">
     <div class="w-1/5 pl-2">Type</div>

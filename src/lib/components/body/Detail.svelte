@@ -1,58 +1,57 @@
 <script lang="ts">
-  import type { VM } from '$lib/types';
+  import Top from '$lib/components/body/parts/Top.svelte';
   import { showError } from '$lib/error.svelte';
+  import { fetchVmData } from '$lib/utils';
+  import type { VM } from '$lib/types';
 
   let { params } = $props();
   let vm: VM | null = $state(null);
   let error = $state('');
   let ready = $state(false);
 
-  async function fetchData() {
-    if (params.vmid) {
-      const response = await fetch(`/dashboard/${params.vmid}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      });
-
-      if (!response.ok) {
-        return {
-          error: (await response.json()).error,
-        };
-      }
-      const result = await response.json();
-      return result;
-    } else {
-      return {
-        vm: null,
-      };
-    }
-  }
-
   $effect(() => {
-    async function loadData() {
-      ({ vm, error } = await fetchData());
-      if (error) {
-        showError(error);
+    if (params.vmid && params.node && params.type) {
+      async function loadData() {
+        ({ vm, error } = await fetchVmData(params));
+        if (error) {
+          showError(error);
+        }
+        ready = true;
       }
-      ready = true;
+      loadData();
     }
-    loadData();
   });
 </script>
 
-{#if ready}
-  {#if !error}
-    {#if vm}
-      {JSON.stringify(vm)}
-      <a href="/dashboard?vmid={params.vmid}&node={params.node}&type={params.type}&remote=1">
-        Connect
-      </a>
+{#if ready && vm}
+  <Top>
+    <div class="flex flex-row justify-between">
+      <p>
+        {#if vm.type == 'lxc'}
+          Container
+        {:else}
+          Virtual Machine
+        {/if}
+        {vm.vmid} ({vm.name}) on node '{params.node}'
+      </p>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex justify-center border border-amber-600 bg-neutral-600 px-5">Overview</div>
+        <a
+          class="flex justify-center border border-neutral-500 bg-neutral-600 px-5 hover:bg-neutral-500"
+          href="/dashboard?vmid={params.vmid}&node={params.node}&type={params.type}&remote=1"
+        >
+          Connect
+        </a>
+      </div>
+    </div>
+  </Top>
+{:else}
+  <Top>
+    Loading {#if params.type == 'lxc'}
+      Container
+    {:else if params.type == 'qemu'}
+      Virtual Machine
     {/if}
-  {:else}
-    <p>{error}</p>
-    <p>Return to <a href="/dashboard">dashboard</a></p>
-  {/if}
+    {params.vmid} data ...
+  </Top>
 {/if}
