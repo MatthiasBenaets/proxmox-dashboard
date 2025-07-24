@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Overview from '$lib/components/Overview.svelte';
-  import Detail from '$lib/components/Detail.svelte';
-  import Remote from '$lib/components/Remote.svelte';
-  import Datacenter from '$lib/components/Datacenter.svelte';
+  import Overview from '$lib/components/body/Overview.svelte';
+  import Detail from '$lib/components/body/Detail.svelte';
+  import Remote from '$lib/components/body/Remote.svelte';
+  import Datacenter from '$lib/components/sidebar/Datacenter.svelte';
   import { showError } from '$lib/error.svelte';
   import type { Params } from '$lib/types';
 
