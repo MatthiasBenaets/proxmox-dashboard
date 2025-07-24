@@ -5,7 +5,9 @@ declare global {
     // interface Error {}
     interface Locals {
       PVEDomain: string | undefined;
+      PVENodes: string | undefined;
       PVEUser: string | undefined;
+      PVERealm: string | undefined;
       PVEAPIToken: string | undefined;
       PVEAuthCookie: string | undefined;
       PVECSRFPreventionToken: string | undefined;

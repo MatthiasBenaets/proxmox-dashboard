@@ -1,31 +1,57 @@
-import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
-import { getCookie, clearCookies } from '$lib/cookies';
+import { setCookie, getCookie, clearCookies } from '$lib/cookies';
+import { getBaseDomain } from '$lib/utils';
+import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
   const { url, cookies } = event;
-
-  const { PVEAuthCookie, PVEUser, PVEAPIToken, PVEDomain, PVECSRFPreventionToken } = getCookie(
-    cookies,
-    ['PVEAuthCookie', 'PVEUser', 'PVEAPIToken', 'PVEDomain', 'PVECSRFPreventionToken']
-  );
+  const {
+    PVEDomain,
+    PVEUser,
+    PVERealm,
+    PVEAPIToken,
+    PVENodes,
+    PVEAuthCookie,
+    PVECSRFPreventionToken,
+  } = getCookie(cookies, [
+    'PVEDomain',
+    'PVEUser',
+    'PVERealm',
+    'PVEAPIToken',
+    'PVENodes',
+    'PVEAuthCookie',
+    'PVECSRFPreventionToken',
+  ]);
 
   let isLoggedIn = false;
   const publicRoutes = ['/login'];
   const isPublicRoute = publicRoutes.includes(url.pathname);
 
   try {
-    if (PVEAuthCookie && PVEUser && PVEAPIToken && PVEDomain) {
+    if (PVEAuthCookie && PVEUser && PVEAPIToken && PVEDomain && PVERealm) {
       const auth = await fetch(`https://${PVEDomain}/api2/json/access/ticket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: PVEUser,
+          username: PVEUser + '@' + PVERealm,
           password: PVEAuthCookie,
         }),
       });
+      const response = await auth.json();
+
+      if (auth.ok) {
+        setCookie(cookies, 'PVEAuthCookie', response.data.ticket, {
+          domain: getBaseDomain(event.url.hostname),
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 60 * 2,
+        });
+      }
+
       isLoggedIn = auth.ok;
     }
   } catch {
@@ -46,6 +72,8 @@ export const handle: Handle = async ({ event, resolve }) => {
       PVEDomain,
       PVEAuthCookie,
       PVECSRFPreventionToken,
+      PVERealm,
+      PVENodes,
     };
 
     if (url.pathname === '/' || url.pathname === '/login') {

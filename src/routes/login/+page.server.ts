@@ -1,18 +1,27 @@
+import config from '$lib/server/config';
 import { setCookie, clearCookies } from '$lib/cookies';
+import { getBaseDomain } from '$lib/utils';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async () => {
   return {
-    domainName: locals.PVEDomain,
-    userName: locals.PVEUser,
-    apiToken: locals.PVEAPIToken,
+    domainName: config.DOMAIN,
+    userName: config.USERNAME,
+    realm: config.REALM,
+    apiToken: config.TOKEN,
+    nodes: config.NODES,
   };
 };
 
 export const actions = {
   login: async ({ request, cookies }) => {
     const formData = Object.fromEntries(await request.formData());
-    const { domainName, userName, password, apiToken } = formData as Record<string, string>;
+    const domainName = config.DOMAIN || (formData.domainName as string);
+    const userName = config.USERNAME || (formData.userName as string);
+    const password = formData.password as string;
+    const realm = config.REALM || (formData.realm as string);
+    const apiToken = config.TOKEN || (formData.apiToken as string);
+    const nodes = config.NODES || (formData.nodes as string);
 
     try {
       const ticket = await fetch(`https://${domainName}/api2/json/access/ticket`, {
@@ -21,7 +30,7 @@ export const actions = {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: userName,
+          username: userName + '@' + realm,
           password: password,
         }),
       });
@@ -30,17 +39,21 @@ export const actions = {
           error: 'Login failed. Please check your credentials.',
           domainName,
           userName,
+          realm,
           apiToken,
+          nodes,
         };
       }
-
-      const token = await fetch(`https://${domainName}/api2/json/access/users/${userName}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `PVEAPIToken=${userName}!api=${apiToken}`,
-        },
-      });
+      const token = await fetch(
+        `https://${domainName}/api2/json/access/users/${userName}@${realm}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `PVEAPIToken=${userName}@${realm}!api=${apiToken}`,
+          },
+        }
+      );
       if (!token.ok) {
         return {
           error: 'Login failed. Invalid API token',
@@ -52,29 +65,30 @@ export const actions = {
       const response = await ticket.json();
       setCookie(cookies, 'PVEDomain', domainName);
       setCookie(cookies, 'PVEUser', userName);
+      setCookie(cookies, 'PVERealm', realm);
       setCookie(cookies, 'PVEAPIToken', apiToken);
       setCookie(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken);
       setCookie(cookies, 'PVEAuthCookie', response.data.ticket, {
+        domain: getBaseDomain(domainName),
         path: '/',
-        httpOnly: false,
+        httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 60 * 2,
       });
+      setCookie(cookies, 'PVENodes', nodes);
 
       return {
         success: true,
-        error: '',
-        domain: domainName,
-        user: userName,
-        apiToken: apiToken,
       };
     } catch (error) {
       return {
         error: 'Something went wrong. Please check the domain. ' + error,
         domainName,
         userName,
+        realm,
         apiToken,
+        nodes,
       };
     }
   },

@@ -6,3 +6,8 @@ export function updateSearchParam(key: string, value: string) {
   url.searchParams.set(key, value);
   goto(url, { replaceState: true });
 }
+
+export function getBaseDomain(host: string) {
+  const parts = host.split('.');
+  return `${parts[parts.length - 2]}.${parts[parts.length - 1]}`;
+}

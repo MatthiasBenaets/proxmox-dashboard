@@ -1,3 +1,4 @@
+import { getBaseDomain } from '$lib/utils';
 import type { Cookies } from '@sveltejs/kit';
 import type { CookieSerializeOptions } from 'cookie';
 
@@ -32,8 +33,19 @@ export function clearCookie(cookies: Cookies, keys: string[]) {
   }
 }
 
-export function clearCookies(cookies: Cookies) {
+export function clearCookies(cookies: Cookies, host?: string) {
   for (const cookie of cookies.getAll()) {
     cookies.delete(cookie.name, { path: '/' });
+  }
+  if (host) {
+    console.log(getBaseDomain(host));
+    cookies.delete('PVEAuthCookie', {
+      domain: '.' + getBaseDomain(host),
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 60 * 2,
+    });
   }
 }

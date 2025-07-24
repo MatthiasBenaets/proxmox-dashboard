@@ -1,8 +1,5 @@
-import config from '$lib/server/config';
 import type { PageServerLoad } from './$types';
 import type { VM } from '$lib/types';
-
-const nodes = config.NODES.split(',');
 
 export const load: PageServerLoad = async ({ locals }) => {
   let vms: VM[] = [];
@@ -10,7 +7,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   let error: string = '';
 
   try {
-    if (!locals.PVEAuthCookie || !locals.PVEUser || !locals.PVEDomain) {
+    if (!locals.PVEAuthCookie || !locals.PVEUser || !locals.PVEDomain || !locals.PVENodes) {
       return {};
     }
 
@@ -18,6 +15,8 @@ export const load: PageServerLoad = async ({ locals }) => {
       'Content-Type': 'application/json',
       Authorization: `PVEAuthCookie=${locals.PVEAuthCookie}`,
     };
+
+    const nodes = locals.PVENodes.split(',');
 
     for (const node of nodes) {
       try {
