@@ -44,7 +44,6 @@ export function clearCookies(cookies: Cookies, host?: string) {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: 60 * 2,
     });
   }
 }

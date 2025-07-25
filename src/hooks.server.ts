@@ -48,7 +48,7 @@ export const handle: Handle = async ({ event, resolve }) => {
           httpOnly: true,
           secure: true,
           sameSite: 'none',
-          maxAge: 60 * 2,
+          maxAge: 60 * 60 * 2,
         });
       }
 
