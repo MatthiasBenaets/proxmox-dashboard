@@ -1,30 +1,10 @@
 <script lang="ts">
   import { Info, Server, Cpu, MemoryStick, HardDrive } from '@lucide/svelte';
   import Top from '$lib/components/body/parts/Top.svelte';
-  import { showError } from '$lib/error.svelte';
-  import { fetchVmData } from '$lib/utils';
-  import type { VM } from '$lib/types';
-
-  let { params } = $props();
-  let vm: VM | null = $state(null);
-  let error = $state('');
-  let ready = $state(false);
-
-  $effect(() => {
-    if (params.vmid && params.node && params.type) {
-      async function loadData() {
-        ({ vm, error } = await fetchVmData(params));
-        if (error) {
-          showError(error);
-        }
-        ready = true;
-      }
-      loadData();
-    }
-  });
+  let { params, vm } = $props();
 </script>
 
-{#if ready && vm}
+{#if vm}
   <Top>
     <div class="flex flex-row justify-between">
       <p>
@@ -140,13 +120,4 @@
     </div>
     <div class="flex flex-col border border-neutral-600"></div>
   </div>
-{:else}
-  <Top>
-    Loading {#if params.type == 'lxc'}
-      Container
-    {:else if params.type == 'qemu'}
-      Virtual Machine
-    {/if}
-    {params.vmid} data ...
-  </Top>
 {/if}

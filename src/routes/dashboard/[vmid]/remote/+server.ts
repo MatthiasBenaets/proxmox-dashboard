@@ -13,7 +13,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
   ) {
     return json(
       {
-        error: 'Not logged in.',
+        error: 'Unable to authenticate. Please log out and in again.',
       },
       { status: 401 }
     );

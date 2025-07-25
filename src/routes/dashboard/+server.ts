@@ -1,16 +1,20 @@
-import type { PageServerLoad } from './$types';
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import type { VM } from '$lib/types';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const GET: RequestHandler = async ({ locals }) => {
   let vms: VM[] = [];
   let offline: string[] = [];
-  let error: string = '';
+  let error = '';
 
   try {
     if (!locals.PVEAuthCookie || !locals.PVEUser || !locals.PVEDomain || !locals.PVENodes) {
-      return {
-        error: 'Unable to authenticate. Please log out and in again.',
-      };
+      return json(
+        {
+          error: 'Unable to authenticate. Please log out and in again.',
+        },
+        { status: 401 }
+      );
     }
 
     const headers = {
@@ -30,6 +34,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         for (const lxc of lxcs.data) {
           lxc.node = node;
         }
+
         const machines = await fetch(`https://${locals.PVEDomain}/api2/json/nodes/${node}/qemu`, {
           method: 'GET',
           headers: headers,
@@ -43,21 +48,17 @@ export const load: PageServerLoad = async ({ locals }) => {
         vms = [...vms, ...lxcs.data, ...qemus.data];
       } catch {
         offline = [...offline, node];
-        error = `Failed to fetch data from node: ${offline} `;
-        continue;
+        error = `Failed to fetch data from node: ${offline}`;
       }
     }
   } catch {
-    return {
-      error: 'Failed to fetch data from Proxmox',
-      locals,
-      vms,
-    };
+    return json(
+      { error: 'Failed to fetch data from Proxmox' },
+      {
+        status: 500,
+      }
+    );
   }
 
-  return {
-    error: error,
-    locals,
-    vms,
-  };
+  return json({ vms, error }, { status: 201 });
 };

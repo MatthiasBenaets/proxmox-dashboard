@@ -1,7 +1,9 @@
 export const errorState = $state({ errors: [] as string[] });
 
 export function showError(message: string) {
-  errorState.errors.push(message);
+  if (!errorState.errors.includes(message)) {
+    errorState.errors.push(message);
+  }
 }
 
 export function clearError(index: number) {

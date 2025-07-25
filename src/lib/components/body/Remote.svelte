@@ -1,14 +1,10 @@
 <script lang="ts">
   import Top from '$lib/components/body/parts/Top.svelte';
   import { showError } from '$lib/error.svelte';
-  import { fetchVmData } from '$lib/utils';
-  import type { VM } from '$lib/types';
 
-  let { params } = $props();
-  let vm: VM | null = $state(null);
+  let { params, vm } = $props();
   let link = $state('');
   let error = $state('');
-  let ready = $state(false);
 
   async function fetchLink() {
     if (params.vmid) {
@@ -36,21 +32,16 @@
 
   $effect(() => {
     async function loadData() {
-      ({ vm, error } = await fetchVmData(params));
-      if (error) {
-        showError(error);
-      }
       ({ link, error } = await fetchLink());
       if (error) {
         showError(error);
       }
-      ready = true;
     }
     loadData();
   });
 </script>
 
-{#if ready && link && vm}
+{#if link && vm}
   <Top>
     <div class="flex flex-row justify-between">
       <p>
