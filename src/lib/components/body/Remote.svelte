@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Top from '$lib/components/body/parts/Top.svelte';
+  import Top from '$lib/components/body/general/Top.svelte';
   import { showError } from '$lib/error.svelte';
 
   let { params, vm } = $props();

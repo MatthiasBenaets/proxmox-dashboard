@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Top from '$lib/components/body/parts/Top.svelte';
+  import Top from '$lib/components/body/general/Top.svelte';
   import { Container, Monitor, File } from '@lucide/svelte';
   import { updateSearchParam, timeFormat } from '$lib/utils';
 
