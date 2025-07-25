@@ -45,5 +45,12 @@ export function clearCookies(cookies: Cookies, host?: string) {
       secure: true,
       sameSite: 'none',
     });
+    cookies.delete('PVECSRFPreventionToken', {
+      domain: '.' + getBaseDomain(host),
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
   }
 }

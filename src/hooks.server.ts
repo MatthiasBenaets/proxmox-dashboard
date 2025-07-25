@@ -27,8 +27,8 @@ export const handle: Handle = async ({ event, resolve }) => {
   const publicRoutes = ['/login'];
   const isPublicRoute = publicRoutes.includes(url.pathname);
 
-  try {
-    if (PVEAuthCookie && PVEUser && PVEAPIToken && PVEDomain && PVERealm) {
+  if (PVEAuthCookie && PVEUser && PVEAPIToken && PVEDomain && PVERealm) {
+    try {
       const auth = await fetch(`https://${PVEDomain}/api2/json/access/ticket`, {
         method: 'POST',
         headers: {
@@ -61,10 +61,10 @@ export const handle: Handle = async ({ event, resolve }) => {
       }
 
       isLoggedIn = auth.ok;
+    } catch {
+      clearCookies(cookies);
+      return redirect(303, '/login');
     }
-  } catch {
-    clearCookies(cookies);
-    return redirect(303, '/login');
   }
 
   if (!isLoggedIn) {
@@ -73,21 +73,21 @@ export const handle: Handle = async ({ event, resolve }) => {
       return redirect(303, '/login');
     }
     return resolve(event);
-  } else {
-    event.locals = {
-      PVEUser,
-      PVEAPIToken,
-      PVEDomain,
-      PVEAuthCookie,
-      PVECSRFPreventionToken,
-      PVERealm,
-      PVENodes,
-    };
-
-    if (url.pathname === '/' || url.pathname === '/login') {
-      return redirect(303, '/dashboard');
-    }
-
-    return resolve(event);
   }
+
+  event.locals = {
+    PVEUser,
+    PVEAPIToken,
+    PVEDomain,
+    PVEAuthCookie,
+    PVECSRFPreventionToken,
+    PVERealm,
+    PVENodes,
+  };
+
+  if (url.pathname === '/' || url.pathname === '/login') {
+    return redirect(303, '/dashboard');
+  }
+
+  return resolve(event);
 };
