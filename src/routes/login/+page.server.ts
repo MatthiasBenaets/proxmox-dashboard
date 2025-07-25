@@ -67,14 +67,21 @@ export const actions = {
       setCookie(cookies, 'PVEUser', userName);
       setCookie(cookies, 'PVERealm', realm);
       setCookie(cookies, 'PVEAPIToken', apiToken);
-      setCookie(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken);
+      setCookie(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken, {
+        domain: getBaseDomain(domainName),
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 60 * 60 * 2,
+      });
       setCookie(cookies, 'PVEAuthCookie', response.data.ticket, {
         domain: getBaseDomain(domainName),
         path: '/',
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 60 * 2,
+        maxAge: 60 * 60 * 2,
       });
       setCookie(cookies, 'PVENodes', nodes);
 

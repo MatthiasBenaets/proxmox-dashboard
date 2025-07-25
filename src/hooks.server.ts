@@ -50,6 +50,14 @@ export const handle: Handle = async ({ event, resolve }) => {
           sameSite: 'none',
           maxAge: 60 * 60 * 2,
         });
+        setCookie(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken, {
+          domain: getBaseDomain(event.url.hostname),
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 60 * 60 * 2,
+        });
       }
 
       isLoggedIn = auth.ok;
