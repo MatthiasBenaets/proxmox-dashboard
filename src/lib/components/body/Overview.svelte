@@ -1,7 +1,7 @@
 <script lang="ts">
   import Top from '$lib/components/body/parts/Top.svelte';
   import { Container, Monitor, File } from '@lucide/svelte';
-  import { updateSearchParam } from '$lib/utils';
+  import { updateSearchParam, timeFormat } from '$lib/utils';
 
   let { vms, node } = $props();
 </script>
@@ -93,7 +93,7 @@
             {((vm.mem / vm.maxmem) * 100).toFixed(1)} %
           </div>
           <div class="w-1/5">
-            {(vm.uptime / 60 / 60 / 24).toFixed(0)} days
+            {timeFormat(vm.uptime)}
           </div>
         </button>
       {/if}

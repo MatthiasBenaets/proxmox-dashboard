@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Info, Server, Cpu, MemoryStick, HardDrive } from '@lucide/svelte';
   import Top from '$lib/components/body/parts/Top.svelte';
+  import { timeFormat } from '$lib/utils';
   let { params, vm } = $props();
 </script>
 
@@ -29,7 +30,7 @@
   <div class="grid grid-cols-[55%_auto] gap-2 p-2">
     <div class="flex flex-col border border-neutral-600">
       <div class="flex h-6 w-full items-center border-b border-neutral-600 bg-neutral-700/50 px-2">
-        {vm.name} (Uptime {(vm.uptime / 60 / 60 / 24).toFixed(0)} days)
+        {vm.name} (Uptime: {timeFormat(vm.uptime)})
       </div>
       <div class="grid grid-cols-1 gap-2 px-8 py-4">
         <div class="flex flex-row justify-between">
