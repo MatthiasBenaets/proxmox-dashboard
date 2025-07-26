@@ -76,7 +76,7 @@
                 updateSearchParam('type', vm.type);
               }}
             >
-              <div class="relative flex flex-row">
+              <div class="relative flex flex-row items-center">
                 {#if vm.template == 1}
                   <File size={15} class="mr-1" />
                 {:else if vm.type == 'lxc'}
@@ -85,7 +85,7 @@
                   <Monitor size={15} class="mr-1" />
                 {/if}{vm.vmid} ({vm.name})
                 {#if vm.status == 'running'}
-                  <div class="absolute top-1 left-1">
+                  <div class="absolute top-1.5 left-1">
                     <svg
                       class="h-5 w-5 text-green-500"
                       aria-hidden="true"
