@@ -1,6 +1,7 @@
 <script lang="ts">
   import Top from '$lib/components/body/general/Top.svelte';
   import { showError } from '$lib/error.svelte';
+  import { onMount } from 'svelte';
 
   let { params, vm } = $props();
   let link = $state('');
@@ -30,14 +31,11 @@
     }
   }
 
-  $effect(() => {
-    async function loadData() {
-      ({ link, error } = await fetchLink());
-      if (error) {
-        showError(error);
-      }
+  onMount(async () => {
+    ({ link, error } = await fetchLink());
+    if (error) {
+      showError(error);
     }
-    loadData();
   });
 </script>
 
