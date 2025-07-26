@@ -1,10 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Play, Power, RefreshCw, Copy } from '@lucide/svelte';
+  import { Play, Power, RefreshCw, Copy, Trash } from '@lucide/svelte';
   import { showAlert } from '$lib/alert.svelte';
   import { showError } from '$lib/error.svelte';
 
   let { vm, params } = $props();
+  let confirmDelete = $state(false);
 
   async function executeAction(action: 'start' | 'reboot' | 'shutdown' | 'clone', message: string) {
     const res = await fetch(`/dashboard/${params.vmid}/status`, {
@@ -47,6 +48,32 @@
 
       setTimeout(() => {
         goto(`/dashboard?vmid=${data.vmid}&node=${vm.node}&type=${vm.type}`);
+      }, 3000);
+    } else {
+      showError('Something went wrong: ' + data.error);
+    }
+  }
+
+  async function deleteVm() {
+    const res = await fetch(`/dashboard/${params.vmid}/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        node: params.node,
+        vmid: params.vmid,
+        type: vm.type,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.status == 201) {
+      showAlert(`Succesfully deleted ${data.vmid}. You will be redirected in 3 seconds.`);
+
+      setTimeout(() => {
+        goto(`/dashboard`);
       }, 3000);
     } else {
       showError('Something went wrong: ' + data.error);
@@ -103,6 +130,44 @@
       >
         <Copy size={15} class="mr-1" /> Clone
       </button>
+    {/if}
+    {#if vm.template != 1}
+      {#if !confirmDelete}
+        <button
+          class="flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 py-1 text-sm hover:bg-neutral-700"
+          onclick={() => {
+            confirmDelete = true;
+          }}
+        >
+          <Trash size={15} class="mr-1" /> Delete
+        </button>
+      {:else}
+        <div
+          class="border-neurtral-600 flex flex-row items-center justify-between rounded border border-neutral-600 bg-neutral-700/50 px-2 py-1 text-sm"
+        >
+          <div class="flex flex-row items-center">
+            <Trash size={15} class="mr-1" /> Delete
+          </div>
+          <div class="flex flex-row items-center">
+            <button
+              class="mr-2 flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 text-sm hover:bg-neutral-700"
+              onclick={() => {
+                deleteVm();
+              }}
+            >
+              Confirm
+            </button>
+            <button
+              class="flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 text-sm hover:bg-neutral-700"
+              onclick={() => {
+                confirmDelete = false;
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      {/if}
     {/if}
   </div>
 </div>
