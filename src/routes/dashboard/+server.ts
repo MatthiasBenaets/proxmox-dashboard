@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { currentVMs } from '$lib/vms.svelte';
 import type { RequestHandler } from './$types';
 import type { VM } from '$lib/types';
 
@@ -46,6 +47,7 @@ export const GET: RequestHandler = async ({ locals }) => {
         }
 
         vms = [...vms, ...lxcs.data, ...qemus.data];
+        currentVMs.set(vms);
       } catch {
         offline = [...offline, node];
         error = `Failed to fetch data from node: ${offline}`;

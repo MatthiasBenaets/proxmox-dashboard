@@ -81,6 +81,8 @@
               Pause
             {:else if task.type == 'vzresume' || task.type == 'qmresume'}
               Resume
+            {:else if task.type == 'vzdestroy' || task.type == 'qmdestroy'}
+              Delete
             {:else if task.type == 'vncproxy'}
               Remote connect
             {:else if task.type == 'vzclone' || task.type == 'qmclone'}

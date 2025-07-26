@@ -14,7 +14,11 @@
         <Info size={15} class="mr-1" /> Status
       </div>
       <p>
-        {vm.status}
+        {#if vm.template == 1}
+          template
+        {:else}
+          {vm.status}
+        {/if}
       </p>
     </div>
     <div class="flex flex-row justify-between">
