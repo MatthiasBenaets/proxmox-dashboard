@@ -1,7 +1,30 @@
 <script lang="ts">
   import { Play, Power, RefreshCw } from '@lucide/svelte';
+  import { showAlert } from '$lib/alert.svelte';
+  import { showError } from '$lib/error.svelte';
 
   let { vm, params } = $props();
+
+  async function executeAction(action: 'start' | 'reboot' | 'shutdown', message: string) {
+    const res = await fetch(`/dashboard/${params.vmid}/status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: action,
+        node: params.node,
+        vmid: params.vmid,
+        type: vm.type,
+      }),
+    });
+
+    if (res.status == 201) {
+      showAlert(message);
+    } else {
+      showError('Something went wrong: ' + (await res.json()).error);
+    }
+  }
 </script>
 
 <div class="flex flex-col border border-neutral-600">
@@ -14,18 +37,7 @@
       {vm.status == 'running' ? 'text-neutral-600' : 'cursor-pointer hover:bg-neutral-700'}"
       onclick={() => {
         if (vm.status == 'stopped') {
-          fetch(`/dashboard/${params.vmid}/status`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action: 'start',
-              node: params.node,
-              vmid: params.vmid,
-              type: vm.type,
-            }),
-          });
+          executeAction('start', `Succesfully started ${vm.vmid} (${vm.name})`);
         }
       }}
     >
@@ -36,18 +48,7 @@
       {vm.status == 'stopped' ? 'text-neutral-600' : 'cursor-pointer hover:bg-neutral-700'}"
       onclick={() => {
         if (vm.status == 'running') {
-          fetch(`/dashboard/${params.vmid}/status`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action: 'stop',
-              node: params.node,
-              vmid: params.vmid,
-              type: vm.type,
-            }),
-          });
+          executeAction('shutdown', `Shutdown requested for ${vm.vmid} (${vm.name})`);
         }
       }}
     >
@@ -58,18 +59,7 @@
       {vm.status == 'stopped' ? 'text-neutral-600' : 'cursor-pointer hover:bg-neutral-700'}"
       onclick={() => {
         if (vm.status == 'running') {
-          fetch(`/dashboard/${params.vmid}/status`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action: 'reboot',
-              node: params.node,
-              vmid: params.vmid,
-              type: vm.type,
-            }),
-          });
+          executeAction('reboot', `Reboot requested for ${vm.vmid} (${vm.name})`);
         }
       }}
     >
