@@ -6,6 +6,8 @@
 
   let { vm, params } = $props();
   let confirmDelete = $state(false);
+  let confirmClone = $state(false);
+  let hostname = $state('');
 
   async function executeAction(action: 'start' | 'reboot' | 'shutdown' | 'clone', message: string) {
     const res = await fetch(`/dashboard/${params.vmid}/status`, {
@@ -28,7 +30,12 @@
     }
   }
 
-  async function cloneVm() {
+  async function cloneVm(name: string) {
+    if (!name) {
+      showAlert('Please enter a name for the cloned machine.');
+      return;
+    }
+
     const res = await fetch(`/dashboard/${params.vmid}/clone`, {
       method: 'POST',
       headers: {
@@ -38,13 +45,16 @@
         node: params.node,
         vmid: params.vmid,
         type: vm.type,
+        name: name,
       }),
     });
 
     const data = await res.json();
 
     if (res.status == 201) {
-      showAlert(`Succesfully cloned to ${data.vmid}. You will be redirected in 3 seconds.`);
+      showAlert(
+        `Succesfully cloned to ${data.vmid} (${name}). You will be redirected in 3 seconds.`
+      );
 
       setTimeout(() => {
         goto(`/dashboard?vmid=${data.vmid}&node=${vm.node}&type=${vm.type}`);
@@ -70,7 +80,7 @@
     const data = await res.json();
 
     if (res.status == 201) {
-      showAlert(`Succesfully deleted ${data.vmid}. You will be redirected in 3 seconds.`);
+      showAlert(`Succesfully deleted ${params.vmid}. You will be redirected in 3 seconds.`);
 
       setTimeout(() => {
         goto(`/dashboard`);
@@ -122,14 +132,45 @@
       <RefreshCw size={15} class="mr-1" /> Reboot
     </button>
     {#if vm.template == 1}
-      <button
-        class="flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 py-1 text-sm hover:bg-neutral-700"
-        onclick={() => {
-          cloneVm();
-        }}
-      >
-        <Copy size={15} class="mr-1" /> Clone
-      </button>
+      {#if !confirmClone}
+        <button
+          class="flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 py-1 text-sm hover:bg-neutral-700"
+          onclick={() => {
+            confirmClone = true;
+          }}
+        >
+          <Copy size={15} class="mr-1" /> Clone
+        </button>
+      {:else}
+        <div
+          class="border-neurtral-600 my-auto flex flex-row justify-between rounded border border-neutral-600 bg-neutral-700/50 px-2 py-1 text-sm"
+        >
+          <input
+            type="text"
+            placeholder="Clone name"
+            bind:value={hostname}
+            class="w-full rounded border border-neutral-600 text-xs"
+          />
+          <div class="flex flex-row">
+            <button
+              class="mx-2 flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 text-xs hover:bg-neutral-700"
+              onclick={() => {
+                cloneVm(hostname);
+              }}
+            >
+              Confirm
+            </button>
+            <button
+              class="flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 text-xs hover:bg-neutral-700"
+              onclick={() => {
+                confirmClone = false;
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      {/if}
     {/if}
     {#if vm.template != 1}
       {#if !confirmDelete}
@@ -150,7 +191,7 @@
           </div>
           <div class="flex flex-row items-center">
             <button
-              class="mr-2 flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 text-sm hover:bg-neutral-700"
+              class="mr-2 flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 text-xs hover:bg-neutral-700"
               onclick={() => {
                 deleteVm();
               }}
@@ -158,7 +199,7 @@
               Confirm
             </button>
             <button
-              class="flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 text-sm hover:bg-neutral-700"
+              class="flex cursor-pointer flex-row items-center rounded border border-neutral-600 bg-neutral-700/50 px-2 text-xs hover:bg-neutral-700"
               onclick={() => {
                 confirmDelete = false;
               }}

@@ -3,7 +3,7 @@ import { currentVMs } from '$lib/vms.svelte';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
-  const { node, vmid, type } = await request.json();
+  const { node, vmid, type, name } = await request.json();
 
   if (
     !locals.PVEAuthCookie ||
@@ -23,7 +23,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
   try {
     const clone = await fetch(
-      `https://${locals.PVEDomain}/api2/json/nodes/${node}/${type}/${vmid}/clone?newid=${maxId + 1}`,
+      `https://${locals.PVEDomain}/api2/json/nodes/${node}/${type}/${vmid}/clone?newid=${maxId + 1}&hostname=${name}`,
       {
         method: 'POST',
         headers: {
