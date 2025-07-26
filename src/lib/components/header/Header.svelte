@@ -4,7 +4,7 @@
   const loggedIn = page.url.pathname !== '/' && page.url.pathname !== '/login';
 </script>
 
-<nav class="top-0 flex h-8 w-full flex-row items-center px-2">
+<nav class="top-0 flex h-[3rem] w-full flex-row items-center px-2">
   <h1 class="text-bold text-xl text-amber-600">
     <a href={loggedIn ? '/dashboard' : '/login'}>Proxmox Dashboard</a>
   </h1>

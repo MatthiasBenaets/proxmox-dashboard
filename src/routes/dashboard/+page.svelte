@@ -58,9 +58,7 @@
 {#if ready}
   <div class="h-full w-full">
     <div class="grid h-full grid-cols-4 xl:grid-cols-5">
-      <div class="m-2 mr-1 overflow-scroll border border-neutral-600 bg-neutral-800">
-        <Datacenter {vms} />
-      </div>
+      <Datacenter {vms} />
       <div
         class="col-span-3 m-2 ml-1 overflow-scroll border border-neutral-600 bg-neutral-800 xl:col-span-4"
       >
