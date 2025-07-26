@@ -1,6 +1,7 @@
 <script lang="ts">
   import Top from '$lib/components/body/general/Top.svelte';
   import Status from '$lib/components/body/detail/Status.svelte';
+  import Actions from '$lib/components/body/detail/Actions.svelte';
   import Tasks from '$lib/components/body/detail/Tasks.svelte';
   let { params, vm } = $props();
 </script>
@@ -29,7 +30,7 @@
   </Top>
   <div class="grid grid-cols-[55%_auto] gap-2 p-2">
     <Status {vm} {params} />
-    <div class="border border-neutral-600"></div>
+    <Actions {vm} {params} />
     <Tasks {params} />
   </div>
 {/if}
