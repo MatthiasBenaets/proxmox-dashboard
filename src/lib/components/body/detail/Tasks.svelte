@@ -75,6 +75,12 @@
               Shutdown
             {:else if task.type == 'vzreboot' || task.type == 'qmreboot'}
               Reboot
+            {:else if task.type == 'vzreset' || task.type == 'qmreset'}
+              Reset
+            {:else if task.type == 'vzpause' || task.type == 'qmpause'}
+              Pause
+            {:else if task.type == 'vzresume' || task.type == 'qmresume'}
+              Resume
             {:else if task.type == 'vncproxy'}
               Remote connect
             {:else if task.type == 'vzclone' || task.type == 'qmclone'}
