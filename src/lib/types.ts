@@ -41,3 +41,16 @@ export interface Params {
   node: string | null;
   type: string | null;
 }
+
+export interface Task {
+  id: string;
+  node: string;
+  pid: number;
+  pstart: number;
+  starttime: number;
+  type: string;
+  upid: string;
+  user: string;
+  endtime: number;
+  status: string;
+}
