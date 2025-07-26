@@ -19,12 +19,19 @@
       </p>
       <div class="grid grid-cols-2 gap-4">
         <div class="flex justify-center border border-amber-600 bg-neutral-600 px-5">Overview</div>
-        <a
-          class="flex justify-center border border-neutral-500 bg-neutral-600 px-5 hover:bg-neutral-500"
-          href="/dashboard?vmid={params.vmid}&node={params.node}&type={params.type}&remote=1"
-        >
-          Connect
-        </a>
+        {#if vm.status == 'running'}
+          <a
+            class="flex justify-center border border-neutral-500 bg-neutral-600 px-5 hover:bg-neutral-500"
+            href="/dashboard?vmid={params.vmid}&node={params.node}&type={params.type}&remote=1"
+          >
+            Connect
+          </a>{:else if vm.status == 'stopped'}
+          <div
+            class="flex cursor-not-allowed justify-center border border-neutral-500 bg-neutral-600 px-5 text-neutral-500"
+          >
+            Connect
+          </div>
+        {/if}
       </div>
     </div>
   </Top>
