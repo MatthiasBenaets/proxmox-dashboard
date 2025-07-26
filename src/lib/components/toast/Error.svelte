@@ -8,9 +8,7 @@
     class="fixed right-4 bottom-5 flex flex-col space-y-2 border border-neutral-600 bg-red-500 p-2"
   >
     {#each errorState.errors as error, index (index)}
-      <div
-        class="{index == errorState.errors.length - 1 ? 'mb-1' : 'mb-2'} flex flex-row items-center"
-      >
+      <div class="{index == errorState.errors.length - 1 ? '' : 'mb-2'} flex flex-row items-center">
         <button class="mr-3 cursor-pointer px-1" on:click={() => clearError(index)}>
           <X size={15} strokeWidth={4} />
         </button>
