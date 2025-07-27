@@ -60,7 +60,7 @@
     <div class="grid h-full grid-cols-4 xl:grid-cols-5">
       <Datacenter {vms} />
       <div
-        class="col-span-3 m-2 ml-1 overflow-scroll border border-neutral-600 bg-neutral-800 xl:col-span-4"
+        class="col-span-3 m-2 ml-1 max-h-[calc(100dvh-3rem)] border border-neutral-600 bg-neutral-800 xl:col-span-4"
       >
         {#if !page.url.search || (page.url.searchParams.size == 1 && page.url.searchParams.get('node'))}
           <Overview {vms} node={params.node || null} />
