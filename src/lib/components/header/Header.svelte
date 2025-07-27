@@ -1,7 +1,11 @@
 <script lang="ts">
   import { page } from '$app/state';
 
-  const loggedIn = page.url.pathname !== '/' && page.url.pathname !== '/login';
+  let loggedIn = $derived(false);
+
+  $effect(() => {
+    loggedIn = page.url.pathname !== '/' && page.url.pathname !== '/login';
+  });
 </script>
 
 <nav class="top-0 flex h-[3rem] w-full flex-row items-center px-2">
