@@ -1,5 +1,5 @@
 import config from '$lib/server/config';
-import { setCookie, clearCookies } from '$lib/cookies';
+import { cookie } from '$lib/cookies';
 import { getBaseDomain } from '$lib/utils';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -63,11 +63,11 @@ export const actions = {
       }
 
       const response = await ticket.json();
-      setCookie(cookies, 'PVEDomain', domainName);
-      setCookie(cookies, 'PVEUser', userName);
-      setCookie(cookies, 'PVERealm', realm);
-      setCookie(cookies, 'PVEAPIToken', apiToken);
-      setCookie(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken, {
+      cookie.set(cookies, 'PVEDomain', domainName);
+      cookie.set(cookies, 'PVEUser', userName);
+      cookie.set(cookies, 'PVERealm', realm);
+      cookie.set(cookies, 'PVEAPIToken', apiToken);
+      cookie.set(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken, {
         domain: getBaseDomain(domainName),
         path: '/',
         httpOnly: true,
@@ -75,7 +75,7 @@ export const actions = {
         sameSite: 'none',
         maxAge: 60 * 60 * 2,
       });
-      setCookie(cookies, 'PVEAuthCookie', response.data.ticket, {
+      cookie.set(cookies, 'PVEAuthCookie', response.data.ticket, {
         domain: getBaseDomain(domainName),
         path: '/',
         httpOnly: true,
@@ -83,7 +83,7 @@ export const actions = {
         sameSite: 'none',
         maxAge: 60 * 60 * 2,
       });
-      setCookie(cookies, 'PVENodes', nodes);
+      cookie.set(cookies, 'PVENodes', nodes);
 
       return {
         success: true,
@@ -101,6 +101,6 @@ export const actions = {
   },
 
   logout: async ({ cookies }) => {
-    clearCookies(cookies);
+    cookie.clearAll(cookies);
   },
 } satisfies Actions;

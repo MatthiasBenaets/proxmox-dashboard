@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { setCookie, getCookie, clearCookies } from '$lib/cookies';
+import { cookie } from '$lib/cookies';
 import { getBaseDomain } from '$lib/utils';
 import type { Handle } from '@sveltejs/kit';
 
@@ -13,7 +13,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     PVENodes,
     PVEAuthCookie,
     PVECSRFPreventionToken,
-  } = getCookie(cookies, [
+  } = cookie.get(cookies, [
     'PVEDomain',
     'PVEUser',
     'PVERealm',
@@ -42,7 +42,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       const response = await auth.json();
 
       if (auth.ok) {
-        setCookie(cookies, 'PVEAuthCookie', response.data.ticket, {
+        cookie.set(cookies, 'PVEAuthCookie', response.data.ticket, {
           domain: getBaseDomain(event.url.hostname),
           path: '/',
           httpOnly: true,
@@ -50,7 +50,7 @@ export const handle: Handle = async ({ event, resolve }) => {
           sameSite: 'none',
           maxAge: 60 * 60 * 2,
         });
-        setCookie(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken, {
+        cookie.set(cookies, 'PVECSRFPreventionToken', response.data.CSRFPreventionToken, {
           domain: getBaseDomain(event.url.hostname),
           path: '/',
           httpOnly: true,
@@ -62,13 +62,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 
       isLoggedIn = auth.ok;
     } catch {
-      clearCookies(cookies);
+      cookie.clearAll(cookies);
       return redirect(303, '/login');
     }
   }
 
   if (!isLoggedIn) {
-    clearCookies(cookies);
+    cookie.clearAll(cookies);
     if (!isPublicRoute) {
       return redirect(303, '/login');
     }
