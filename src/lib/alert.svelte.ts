@@ -1,11 +1,16 @@
-export const alertState = $state({ alerts: [] as string[] });
+let alerts: string[] = $state([]);
 
-export function showAlert(message: string) {
-  if (!alertState.alerts.includes(message)) {
-    alertState.alerts.push(message);
-  }
+export const currentAlerts = {
+  get() {
+    return alerts;
+  },
+  set(value: string) {
+    if (!alerts.includes(value)) {
+      alerts.push(value);
+    }
 
-  setTimeout(() => {
-    alertState.alerts = alertState.alerts.filter((alert) => alert !== message);
-  }, 5000);
-}
+    setTimeout(() => {
+      alerts = alerts.filter((alert) => alert !== value);
+    }, 5000);
+  },
+};

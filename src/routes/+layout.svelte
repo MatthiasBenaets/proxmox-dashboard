@@ -4,7 +4,7 @@
   import Error from '$lib/components/toast/Error.svelte';
   import Alert from '$lib/components/toast/Alert.svelte';
   import { currentErrors } from '$lib/error.svelte';
-  import { alertState } from '$lib/alert.svelte';
+  import { currentAlerts } from '$lib/alert.svelte';
 
   let { children } = $props();
 </script>
@@ -18,7 +18,7 @@
     {@render children()}
   </main>
 
-  {#if alertState.alerts}
+  {#if currentAlerts.get().length > 0}
     <Alert />
   {/if}
 

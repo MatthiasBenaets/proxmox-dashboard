@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Play, Power, RefreshCw, Copy, Trash } from '@lucide/svelte';
-  import { showAlert } from '$lib/alert.svelte';
+  import { currentAlerts } from '$lib/alert.svelte';
   import { currentErrors } from '$lib/error.svelte';
 
   let { vm, params } = $props();
@@ -24,7 +24,7 @@
     });
 
     if (res.status == 201) {
-      showAlert(message);
+      currentAlerts.set(message);
     } else {
       currentErrors.set('Something went wrong: ' + (await res.json()).error);
     }
@@ -32,7 +32,7 @@
 
   async function cloneVm(name: string) {
     if (!name) {
-      showAlert('Please enter a name for the cloned machine.');
+      currentAlerts.set('Please enter a name for the cloned machine.');
       return;
     }
 
@@ -52,7 +52,7 @@
     const data = await res.json();
 
     if (res.status == 201) {
-      showAlert(
+      currentAlerts.set(
         `Succesfully cloned to ${data.vmid} (${name}). You will be redirected in 3 seconds.`
       );
 
@@ -80,7 +80,7 @@
     const data = await res.json();
 
     if (res.status == 201) {
-      showAlert(`Succesfully deleted ${params.vmid}. You will be redirected in 3 seconds.`);
+      currentAlerts.set(`Succesfully deleted ${params.vmid}. You will be redirected in 3 seconds.`);
 
       setTimeout(() => {
         goto(`/dashboard`);
