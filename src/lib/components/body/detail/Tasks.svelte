@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { showError } from '$lib/error.svelte';
+  import { currentErrors } from '$lib/error.svelte';
   import { epochToTime } from '$lib/utils';
   import type { Task } from '$lib/types';
 
@@ -35,7 +35,7 @@
     async function loadData() {
       ({ tasks, error } = await fetchLink());
       if (error) {
-        showError(error);
+        currentErrors.set(error);
       }
     }
     loadData();

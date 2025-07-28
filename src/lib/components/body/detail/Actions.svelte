@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { Play, Power, RefreshCw, Copy, Trash } from '@lucide/svelte';
   import { showAlert } from '$lib/alert.svelte';
-  import { showError } from '$lib/error.svelte';
+  import { currentErrors } from '$lib/error.svelte';
 
   let { vm, params } = $props();
   let confirmDelete = $state(false);
@@ -26,7 +26,7 @@
     if (res.status == 201) {
       showAlert(message);
     } else {
-      showError('Something went wrong: ' + (await res.json()).error);
+      currentErrors.set('Something went wrong: ' + (await res.json()).error);
     }
   }
 
@@ -60,7 +60,7 @@
         goto(`/dashboard?vmid=${data.vmid}&node=${vm.node}&type=${vm.type}`);
       }, 3000);
     } else {
-      showError('Something went wrong: ' + data.error);
+      currentErrors.set('Something went wrong: ' + data.error);
     }
   }
 
@@ -86,7 +86,7 @@
         goto(`/dashboard`);
       }, 3000);
     } else {
-      showError('Something went wrong: ' + data.error);
+      currentErrors.set('Something went wrong: ' + data.error);
     }
   }
 </script>

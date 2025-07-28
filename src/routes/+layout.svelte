@@ -3,7 +3,7 @@
   import Header from '$lib/components/header/Header.svelte';
   import Error from '$lib/components/toast/Error.svelte';
   import Alert from '$lib/components/toast/Alert.svelte';
-  import { errorState } from '$lib/error.svelte';
+  import { currentErrors } from '$lib/error.svelte';
   import { alertState } from '$lib/alert.svelte';
 
   let { children } = $props();
@@ -22,7 +22,7 @@
     <Alert />
   {/if}
 
-  {#if errorState.errors}
+  {#if currentErrors.get().length > 0}
     <Error />
   {/if}
 </div>

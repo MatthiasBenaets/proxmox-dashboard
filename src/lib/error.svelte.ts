@@ -1,15 +1,18 @@
-export const errorState = $state({ errors: [] as string[] });
+let errors: string[] = $state([]);
 
-export function showError(message: string) {
-  if (!errorState.errors.includes(message)) {
-    errorState.errors.push(message);
-  }
-}
-
-export function clearError(index: number) {
-  errorState.errors.splice(index, 1);
-}
-
-export function clearAllErrors() {
-  errorState.errors = [];
-}
+export const currentErrors = {
+  get() {
+    return errors;
+  },
+  set(value: string) {
+    if (!errors.includes(value)) {
+      errors.push(value);
+    }
+  },
+  clear(index: number) {
+    errors.splice(index, 1);
+  },
+  clearAll() {
+    errors = [];
+  },
+};

@@ -4,7 +4,7 @@
   import Detail from '$lib/components/body/Detail.svelte';
   import Remote from '$lib/components/body/Remote.svelte';
   import Datacenter from '$lib/components/sidebar/Datacenter.svelte';
-  import { showError } from '$lib/error.svelte';
+  import { currentErrors } from '$lib/error.svelte';
   import type { VM, Params } from '$lib/types';
 
   let vms: VM[] = $state([]);
@@ -44,7 +44,7 @@
     async function loadData() {
       ({ vms, error } = await fetchVMData());
       if (error) {
-        showError(error);
+        currentErrors.set(error);
       }
       if (vms) vms.sort((a, b) => a.vmid - b.vmid);
       ready = true;
