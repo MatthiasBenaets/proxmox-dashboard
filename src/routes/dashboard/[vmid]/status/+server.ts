@@ -1,53 +1,30 @@
 import { json } from '@sveltejs/kit';
+import { validateAuth } from '$lib/server/auth';
+import { pveFetch } from '$lib/server/fetch';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
   const { action, node, vmid, type } = await request.json();
 
-  if (
-    !locals.PVEAuthCookie ||
-    !locals.PVEUser ||
-    !locals.PVEDomain ||
-    !locals.PVECSRFPreventionToken
-  ) {
-    return json(
-      {
-        error: 'Unable to authenticate. Please log out and in again.',
-      },
-      { status: 401 }
-    );
-  }
+  const auth = validateAuth(locals);
+  if (!auth.valid) return json({ error: auth.message }, { status: 401 });
 
   try {
-    const status = await fetch(
-      `https://${locals.PVEDomain}/api2/json/nodes/${node}/${type}/${vmid}/status/${action}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `PVEAuthCookie=${locals.PVEAuthCookie}`,
-          CSRFPreventionToken: locals.PVECSRFPreventionToken,
-        },
-        body: JSON.stringify({}),
-      }
+    const status = await pveFetch(
+      `/api2/json/nodes/${node}/${type}/${vmid}/status/${action}`,
+      'POST',
+      locals
     );
     // const response = await status.json();
 
     if (!status.ok) {
       return json(
-        {
-          error: 'Failed to connect to machine. ' + status.statusText,
-        },
+        { error: 'Failed to connect to machine. ' + status.statusText },
         { status: status.status }
       );
     }
   } catch (error) {
-    return json(
-      {
-        error: `Failed to ${action} the machine:  ` + error,
-      },
-      { status: 500 }
-    );
+    return json({ error: `Failed to ${action} the machine:  ` + error }, { status: 500 });
   }
 
   return json({}, { status: 201 });

@@ -9,8 +9,8 @@ declare global {
       PVEUser: string | undefined;
       PVERealm: string | undefined;
       PVEAPIToken: string | undefined;
-      PVEAuthCookie: string | undefined;
-      PVECSRFPreventionToken: string | undefined;
+      PVEAuthCookie: string;
+      PVECSRFPreventionToken: string;
     }
     // interface PageData {}
     // interface PageState {}

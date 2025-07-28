@@ -75,15 +75,17 @@ export const handle: Handle = async ({ event, resolve }) => {
     return resolve(event);
   }
 
-  event.locals = {
-    PVEUser,
-    PVEAPIToken,
-    PVEDomain,
-    PVEAuthCookie,
-    PVECSRFPreventionToken,
-    PVERealm,
-    PVENodes,
-  };
+  if (PVEAuthCookie && PVECSRFPreventionToken) {
+    event.locals = {
+      PVEUser,
+      PVEAPIToken,
+      PVEDomain,
+      PVEAuthCookie,
+      PVECSRFPreventionToken,
+      PVERealm,
+      PVENodes,
+    };
+  }
 
   if (url.pathname === '/' || url.pathname === '/login') {
     return redirect(303, '/dashboard');

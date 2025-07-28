@@ -1,36 +1,20 @@
 import { json } from '@sveltejs/kit';
+import { validateAuth } from '$lib/server/auth';
+import { pveFetch } from '$lib/server/fetch';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
   let link: string = '';
   const { vmid, node, type } = await request.json();
 
-  if (
-    !locals.PVEAuthCookie ||
-    !locals.PVEUser ||
-    !locals.PVEDomain ||
-    !locals.PVECSRFPreventionToken
-  ) {
-    return json(
-      {
-        error: 'Unable to authenticate. Please log out and in again.',
-      },
-      { status: 401 }
-    );
-  }
+  const auth = validateAuth(locals);
+  if (!auth.valid) return json({ error: auth.message }, { status: 401 });
 
   try {
-    const vncproxy = await fetch(
-      `https://${locals.PVEDomain}/api2/json/nodes/${node}/${type}/${vmid}/vncproxy?websocket=1`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `PVEAuthCookie=${locals.PVEAuthCookie}`,
-          CSRFPreventionToken: locals.PVECSRFPreventionToken,
-        },
-        body: JSON.stringify({}),
-      }
+    const vncproxy = await pveFetch(
+      `/api2/json/nodes/${node}/${type}/${vmid}/vncproxy?websocket=1`,
+      'POST',
+      locals
     );
     const response = await vncproxy.json();
 
@@ -44,16 +28,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     }
 
     // might not be required?
-    await fetch(
-      `https://${locals.PVEDomain}/api2/json/nodes/${node}/${type}/${vmid}/vncwebsocket?port=${response.data.port}&vncticket=${encodeURIComponent(response.data.ticket)}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `PVEAuthCookie=${locals.PVEAuthCookie}`,
-          CSRFPreventionToken: locals.PVECSRFPreventionToken,
-        },
-      }
+    await pveFetch(
+      `/api2/json/nodes/${node}/${type}/${vmid}/vncwebsocket?port=${response.data.port}&vncticket=${encodeURIComponent(response.data.ticket)}`,
+      'GET',
+      locals
     );
 
     if (type == 'lxc') {
@@ -65,18 +43,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       link = `https://${locals.PVEDomain}/?node=${node}&console=kvm&novnc=1&resize=1&vmid=${vmid}&path=api2/json/nodes/${node}/qemu/${vmid}/vncwebsocket/port/${response.data.port}/vncticket/${encodeURIComponent(response.data.ticket)}`;
     }
   } catch (error) {
-    return json(
-      {
-        error: 'Failed to connect to machine ' + error,
-      },
-      { status: 500 }
-    );
+    return json({ error: 'Failed to connect to machine ' + error }, { status: 500 });
   }
 
-  return json(
-    {
-      link,
-    },
-    { status: 201 }
-  );
+  return json({ link }, { status: 201 });
 };
